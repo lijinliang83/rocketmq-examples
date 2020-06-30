@@ -1,0 +1,40 @@
+server:
+  port: 8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  application:
+    name: rocketmq-consumer
+  main:
+    allow-bean-definition-overriding: true  #Spring Boot 2.1 需要设定
+
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: 192.168.182.124:9876
+        bindings:
+          input1:
+            consumer:
+              orderly: false #是否同步消费消息模式,默认值false,这里为了说明所以写上
+#              tag: tag1 #只接收tag为tag1的消息
+          input2:
+            consumer:
+              orderly: false
+      bindings:
+        input1:
+          destination: test-topic-one
+          content-type: application/json
+          group: test-consumer-group-1
+          consumer:
+            concurrency: 3 #定制消费者线程数;提高消费能力;Spring Cloud Stream将同时启动3个线程用于名为input1的Binding进行消费
+            maxAttempts: 1  #最多尝试次数;如果将该属性值定义为1，则表示不允许进行重试
+        input2:
+          destination: test-topic-two
+          content-type: application/json
+          group: test-consumer-group-2

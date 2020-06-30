@@ -1,0 +1,36 @@
+server:
+  port: 8089
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  application:
+    name: rocketmq-producer
+  main:
+    allow-bean-definition-overriding: true  #Spring Boot 2.1 需要设定
+
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: 192.168.182.124:9876 #如果集群加 ; 隔开
+        bindings:
+          output1:
+            producer:
+              group: test-producer-group-1 #生产者组名
+          output2:
+            producer:
+              group: test-producer-group-2 #生产者组名
+              transactional: true #是否发送事务消息,默认是 false
+              sync: false #是否使用同步得方式发送消息，默认值是false，这里为了说明所以写上
+      bindings:
+        output1:
+          destination: test-topic-one
+          content-type: application/json
+        output2:
+          destination: test-topic-two
+          content-type: application/json
